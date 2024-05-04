@@ -10,7 +10,7 @@ from app.utils.nickname_gen import generate_nickname
 
 
 def validate_url(url: Optional[str]) -> Optional[str]:
-    if url is None:
+    if url is None or len(url)==0:
         return url
     url_regex = r'^https?://(?:www\.)?[a-zA-Z0-9:?&=._/-]+\.[a-zA-z]{2,3}/?\/[a-zA-Z0-9-]+'
     if not re.match(url_regex, url):
@@ -23,7 +23,7 @@ class UserBase(BaseModel):
     first_name: Optional[str] = Field(None, example="John")
     last_name: Optional[str] = Field(None, example="Doe")
     bio: Optional[str] = Field(None, example="Experienced software developer specializing in web applications.")
-    profile_picture_url: Optional[str] = Field(None, example="https://example.com/profiles/john.jpg")
+    profile_picture_url: Optional[str] = Field(None, example="")
     linkedin_profile_url: Optional[str] =Field(None, example="https://linkedin.com/in/johndoe")
     github_profile_url: Optional[str] = Field(None, example="https://github.com/johndoe")
     role: UserRole
@@ -35,8 +35,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     email: EmailStr = Field(..., example="john.doe@example.com")
-    password: str = Field(..., example="SecurePassword@1234",
-)
+    password: str = Field(..., example="SecurePassword@1234")
     
     @validator('password')
     def validate_password(cls, v):
@@ -64,7 +63,7 @@ class UserUpdate(UserBase):
     first_name: Optional[str] = Field(None, example="John")
     last_name: Optional[str] = Field(None, example="Doe")
     bio: Optional[str] = Field(None, example="Experienced software developer specializing in web applications.")
-    profile_picture_url: Optional[str] = Field(None, example="https://example.com/profiles/john.jpg")
+    profile_picture_url: Optional[str] = Field(None, example="")
     linkedin_profile_url: Optional[str] =Field(None, example="https://linkedin.com/in/johndoe")
     github_profile_url: Optional[str] = Field(None, example="https://github.com/johndoe")
     role: Optional[str] = Field(None, example="AUTHENTICATED")

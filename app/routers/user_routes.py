@@ -187,7 +187,7 @@ async def create_user(user: UserCreate,request: Request, db: AsyncSession = Depe
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists")
     # profile_image = await upload()
     
-    created_user = await UserService.create(db, user.model_dump(), email_service,"https://www.google.com/image")
+    created_user = await UserService.create(db, user.model_dump(), email_service)
 
     if not created_user:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create user")
