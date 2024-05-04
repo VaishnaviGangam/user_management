@@ -68,7 +68,7 @@ async def get_user(user_id: UUID, request: Request, db: AsyncSession = Depends(g
         github_profile_url=user.github_profile_url,
         linkedin_profile_url=user.linkedin_profile_url,
         role=user.role,
-        email=user.email,
+        email=user.email.lower(),
         last_login_at=user.last_login_at,
         created_at=user.created_at,
         updated_at=user.updated_at,
@@ -101,7 +101,7 @@ async def update_user(user_id: UUID, user_update: UserUpdate, request: Request, 
         first_name=updated_user.first_name,
         last_name=updated_user.last_name,
         nickname=updated_user.nickname,
-        email=updated_user.email,
+        email=updated_user.email.lower(),
         role=updated_user.role,
         last_login_at=updated_user.last_login_at,
         profile_picture_url=updated_user.profile_picture_url,
@@ -150,7 +150,7 @@ async def update_image(user_id: UUID, request: Request,db: AsyncSession = Depend
         first_name=updated_user.first_name,
         last_name=updated_user.last_name,
         nickname=updated_user.nickname,
-        email=updated_user.email,
+        email=updated_user.email.lower(),
         role=updated_user.role,
         last_login_at=updated_user.last_login_at,
         profile_picture_url=updated_user.profile_picture_url,
@@ -182,7 +182,7 @@ async def create_user(user: UserCreate,request: Request, db: AsyncSession = Depe
     Returns:
     - UserResponse: The newly created user's information along with navigation links.
     """
-    existing_user = await UserService.get_by_email(db, user.email)
+    existing_user = await UserService.get_by_email(db, user.email.lower())
     if existing_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists")
     # profile_image = await upload()
@@ -255,7 +255,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Async
             access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
 
             access_token = create_access_token(
-                data={"sub": user.email, "role": str(user.role.name)},
+                data={"sub": user.email.lower(), "role": str(user.role.name)},
                 expires_delta=access_token_expires
             )
 
@@ -272,7 +272,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Async
         access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
 
         access_token = create_access_token(
-            data={"sub": user.email, "role": str(user.role.name)},
+            data={"sub": user.email.lower(), "role": str(user.role.name)},
             expires_delta=access_token_expires
         )
 

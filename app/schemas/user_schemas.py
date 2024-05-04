@@ -54,6 +54,10 @@ class UserCreate(UserBase):
             raise ValueError("Password must contain at least one special character.")
         return v
     
+    @validator('email', pre=True)
+    def email_to_lower(cls, v):
+        return v.lower()
+    
 class UserUpdate(UserBase):
     email: Optional[EmailStr] = Field(None, example="john.doe@example.com")
     nickname: Optional[str] = Field(None, min_length=3, pattern=r'^[\w-]+$', example="john_doe123")
@@ -70,6 +74,9 @@ class UserUpdate(UserBase):
         if not any(values.values()):
             raise ValueError("At least one field must be provided for update")
         return values
+    @validator('email', pre=True)
+    def email_to_lower(cls, v):
+        return v.lower()
 
 class UserResponse(UserBase):
     id: uuid.UUID = Field(..., example=uuid.uuid4())
@@ -81,6 +88,9 @@ class UserResponse(UserBase):
 class LoginRequest(BaseModel):
     email: str = Field(..., example="john.doe@example.com")
     password: str = Field(..., example="Secure*1234")
+    @validator('email', pre=True)
+    def email_to_lower(cls, v):
+        return v.lower()
 
 class ErrorResponse(BaseModel):
     error: str = Field(..., example="Not Found")

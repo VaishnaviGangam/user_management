@@ -103,6 +103,30 @@ async def test_login_success(async_client, verified_user):
     # Use the decode_token method from jwt_service to decode the JWT
     decoded_token = decode_token(data["access_token"])
     assert decoded_token is not None, "Failed to decode token"
+
+    assert decoded_token["role"] == "AUTHENTICATED", "The user role should be AUTHENTICATED"
+
+def to_camel_case(snake_case):
+    words = snake_case.split('_')
+    return words[0] + ''.join(word.capitalize() for word in words[1:])
+
+async def test_login_success_case_sensitive(async_client, verified_user):
+    # Attempt to login with the test user
+    form_data = {
+        "username": to_camel_case(verified_user.email),
+        "password": "MySuperPassword$1234"
+    }
+    response = await async_client.post("/login/", data=urlencode(form_data), headers={"Content-Type": "application/x-www-form-urlencoded"})
+    
+    # Check for successful login response
+    assert response.status_code == 200
+    data = response.json()
+    assert "access_token" in data
+    assert data["token_type"] == "bearer"
+
+    # Use the decode_token method from jwt_service to decode the JWT
+    decoded_token = decode_token(data["access_token"])
+    assert decoded_token is not None, "Failed to decode token"
     assert decoded_token["role"] == "AUTHENTICATED", "The user role should be AUTHENTICATED"
 
 @pytest.mark.asyncio
