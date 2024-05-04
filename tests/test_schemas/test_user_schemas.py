@@ -97,17 +97,23 @@ def test_user_base_nickname_invalid(nickname, user_base_data):
         UserBase(**user_base_data)
 
 # Parametrized tests for URL validation
-@pytest.mark.parametrize("url", ["http://valid.com/profile.jpg", "https://valid.com/profile.png", None])
+@pytest.mark.parametrize("url", ["http://valid.com/profile.jpg", "https://valid.com/profile.png", None,"https://www.valid.com/profile.png"])
 def test_user_base_url_valid(url, user_base_data):
     user_base_data["profile_picture_url"] = url
     user = UserBase(**user_base_data)
     assert user.profile_picture_url == url
 
-@pytest.mark.parametrize("url", ["ftp://invalid.com/profile.jpg", "http//invalid", "https//invalid"])
+@pytest.mark.parametrize("url", [
+    "ftp://invalid.com/profile.jpg",
+    "http//invalid",
+    "https//invalid",
+    "http://www.githubanca"
+])
 def test_user_base_url_invalid(url, user_base_data):
     user_base_data["profile_picture_url"] = url
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError) as exc_info:
         UserBase(**user_base_data)
+    assert "Invalid URL format" in str(exc_info.value)
 
 
 @pytest.mark.parametrize("password", ["SecurePassword123@"])
