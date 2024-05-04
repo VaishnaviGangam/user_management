@@ -23,7 +23,7 @@ def test_image():
 def test_file():
      image = Image.new('RGB', (500, 300), color='red')
      image.save('/tmp/test_image.jpg')
-     return UploadFile(filename="test_image.jpg", file=BytesIO(image.tobytes()))
+     return UploadFile(filename="test_image.jpg", file=BytesIO(image.tobytes()),size=12093)
 
 @pytest.fixture
 def test_user_id():
