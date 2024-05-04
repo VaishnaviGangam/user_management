@@ -20,6 +20,19 @@ async def test_create_user_with_valid_data(db_session, email_service):
     assert user is not None
     assert user.email == user_data["email"]
 
+async def test_create_user_invalid_data_image(db_session, email_service):
+    user_data = {
+        "nickname": generate_nickname(),
+        "email": "valid_user@example.com",
+        "password": "ValidPassword123!",
+        "role": UserRole.ADMIN.name,
+        "profile_picture_url" : "https://www.updated_email.com/image"
+    }
+    user = await UserService.create(db_session, user_data,email_service)
+    assert user is not None
+    assert user.email == user_data["email"]
+    assert hasattr(user,"profile_picture_url")
+
 # Test creating a user with invalid data
 async def test_create_user_with_invalid_data(db_session, email_service):
     user_data = {
@@ -67,6 +80,12 @@ async def test_update_user_valid_data(db_session, user):
     updated_user = await UserService.update(db_session, user.id, {"email": new_email})
     assert updated_user is not None
     assert updated_user.email == new_email
+
+async def test_update_user_invalid_data_image(db_session, user):
+    profile_picture_url = "https://www.updated_email.com/image"
+    updated_user = await UserService.update(db_session, user.id, {"profile_picture_url": profile_picture_url})
+    assert updated_user is not None
+    assert updated_user.profile_picture_url != profile_picture_url
 
 # Test updating a user with invalid data
 async def test_update_user_invalid_data(db_session, user):
