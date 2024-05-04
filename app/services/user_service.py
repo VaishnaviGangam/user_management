@@ -51,7 +51,7 @@ class UserService:
 
     @classmethod
     async def get_by_email(cls, session: AsyncSession, email: str) -> Optional[User]:
-        return await cls._fetch_user(session, email=email)
+        return await cls._fetch_user(session, email=email.lower())
     
     @classmethod
     async def upload(cls, session: AsyncSession, user_id: UUID, profile_image: Dict[str, str]) -> Optional[User]:
@@ -76,7 +76,7 @@ class UserService:
     async def create(cls, session: AsyncSession, user_data: Dict[str, str], email_service: EmailService) -> Optional[User]:
         try:
             validated_data = UserCreate(**user_data).model_dump()
-            existing_user = await cls.get_by_email(session, validated_data['email'])
+            existing_user = await cls.get_by_email(session, validated_data['email'].lower())
             if existing_user:
                 logger.error("User with given email already exists.")
                 return None
@@ -151,7 +151,7 @@ class UserService:
 
     @classmethod
     async def login_user(cls, session: AsyncSession, email: str, password: str) -> Optional[User]:
-        user = await cls.get_by_email(session, email)
+        user = await cls.get_by_email(session, email.lower())
         if user:
             if verify_password(password, user.hashed_password):
                 user.failed_login_attempts = 0
@@ -169,12 +169,12 @@ class UserService:
 
     @classmethod
     async def is_account_locked(cls, session: AsyncSession, email: str) -> bool:
-        user = await cls.get_by_email(session, email)
+        user = await cls.get_by_email(session, email.lower())
         return user.is_locked if user else False
 
     @classmethod
     async def is_verified(cls, session: AsyncSession, email: str) -> bool:
-        user = await cls.get_by_email(session, email)
+        user = await cls.get_by_email(session, email.lower())
         return user.email_verified if user else False
 
     @classmethod
