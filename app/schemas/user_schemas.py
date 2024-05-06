@@ -13,7 +13,7 @@ def validate_url(url: Optional[str]) -> Optional[str]:
     if url is None or len(url)==0:
         return url
     url_regex = r'^https?://(?:www\.)?[a-zA-Z0-9:?&=._/-]+\.[a-zA-z]{2,3}/?\/[a-zA-Z0-9-]+'
-    if not re.match(url_regex, url):
+    if not re.match(url_regex, url) and not url.startswith("http://localhost:9000"):
         raise ValueError('Invalid URL format')
     return url
 
